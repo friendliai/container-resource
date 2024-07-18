@@ -1,0 +1,37 @@
+services:
+  engine:
+    image: registry.friendli.ai/trial
+    command:
+      - --hf-model-name
+      - ${HF_MODEL_NAME}
+    environment:
+      FRIENDLI_CONTAINER_SECRET: ${FRIENDLI_CONTAINER_SECRET}
+      HF_TOKEN: ${HF_TOKEN:-}
+    volumes:
+      - ~/.cache/huggingface:/root/.cache/huggingface
+    ports:
+      - ${FRIENDLI_PORT:-8000}:8000
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['0']
+              capabilities: [gpu]
+  prometheus:
+    image: prom/prometheus:v2.53.1
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    volumes:
+      - ./prometheus:/etc/prometheus:ro
+    depends_on:
+      - engine
+  grafana:
+    image: grafana/grafana:11.1.0
+    volumes:
+      - ./grafana:/etc/grafana/provisioning:ro
+      - ./dashboards:/etc/dashboards:ro
+    ports:
+      - ${FRIENDLI_GRAFANA_PORT:-3000}:3000
+    depends_on:
+      - prometheus
