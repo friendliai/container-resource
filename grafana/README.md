@@ -1,5 +1,5 @@
 <!---
-Copyright (c) 2022-present, FriendliAI Inc. All rights reserved.
+Copyright (c) 2022-present, FriendliAI Corp. All rights reserved.
 -->
 
 <h2><p align="center">Grafana Templates for Friendli Container</p></h2>
